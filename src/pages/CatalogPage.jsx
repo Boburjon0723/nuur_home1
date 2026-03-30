@@ -5,7 +5,12 @@ import {
   productDescription,
   productTitle,
 } from '../api/catalog';
-import { useLocation, useOutletContext, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useOutletContext,
+  useSearchParams,
+} from 'react-router-dom';
 import CategorySection from '../components/CategorySection';
 import ProductDetailPanel from '../components/ProductDetailPanel';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -20,6 +25,19 @@ function productIdsMatch(storedId, queryId) {
   if (a === b) return true;
   const norm = (s) => s.toLowerCase().replace(/-/g, '');
   return norm(a) === norm(b);
+}
+
+function scrollToCategorySection(catId) {
+  if (catId == null) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  const id = `cat-${catId}`;
+  const run = () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  run();
+  requestAnimationFrame(run);
+  setTimeout(run, 80);
+  setTimeout(run, 320);
 }
 
 function parseFetchError(e) {
@@ -41,6 +59,7 @@ export default function CatalogPage() {
     setActiveCategoryId,
   } = useOutletContext() || {};
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useLanguage();
 
@@ -260,9 +279,16 @@ export default function CatalogPage() {
   }
 
   function handleSelectCategory(categoryId) {
-    const targetId = categoryId ? `cat-${categoryId}` : 'cat-other';
-    const el = document.getElementById(targetId);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (categoryId == null) {
+      navigate({ pathname: '/', search: '', hash: '' }, { replace: false });
+      scrollToCategorySection(null);
+    } else {
+      navigate(
+        { pathname: '/', search: '', hash: `cat-${categoryId}` },
+        { replace: false }
+      );
+      scrollToCategorySection(categoryId);
+    }
     setMobileFiltersOpen(false);
   }
 

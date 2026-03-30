@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { categoryLabel } from '../api/catalog';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackEvent } from '../lib/analytics';
@@ -11,7 +11,21 @@ const LANGS = [
   { code: 'en', labelKey: 'langEn' },
 ];
 
+function scrollToCategorySection(catId) {
+  if (catId == null) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  const id = `cat-${catId}`;
+  const run = () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  run();
+  requestAnimationFrame(run);
+  setTimeout(run, 80);
+  setTimeout(run, 320);
+}
+
 export default function HeaderNav({ categories = [], activeCategoryId = null }) {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const isCatalog = pathname === '/' || pathname === '';
@@ -67,6 +81,11 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <Link
               to="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate({ pathname: '/', search: '', hash: '' }, { replace: false });
+                scrollToCategorySection(null);
+              }}
               className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                 activeCategoryId == null
                   ? 'border-brand/40 bg-brand/10 text-brand'
@@ -80,12 +99,18 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
               <Link
                 key={cat.id}
                 to={`/#cat-${cat.id}`}
-                onClick={() =>
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(
+                    { pathname: '/', search: '', hash: `cat-${cat.id}` },
+                    { replace: false }
+                  );
                   trackEvent('category_click', {
                     categoryId: cat.id,
                     source: 'header',
-                  })
-                }
+                  });
+                  scrollToCategorySection(cat.id);
+                }}
                 className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                   activeCategoryId === cat.id
                     ? 'border-brand/40 bg-brand/10 text-brand'
