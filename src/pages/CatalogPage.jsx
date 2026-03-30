@@ -13,6 +13,15 @@ import { trackEvent } from '../lib/analytics';
 
 const FAVORITES_KEY = 'catalog-vitrina-favorites';
 
+function productIdsMatch(storedId, queryId) {
+  const a = String(storedId ?? '').trim();
+  const b = String(queryId ?? '').trim();
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const norm = (s) => s.toLowerCase().replace(/-/g, '');
+  return norm(a) === norm(b);
+}
+
 function parseFetchError(e) {
   const msg = e?.message || '';
   if (msg === 'ENV_MISSING') return { kind: 'env' };
@@ -106,14 +115,23 @@ export default function CatalogPage() {
 
   useEffect(() => {
     if (loading || products.length === 0) return;
-    const pid = searchParams.get('product');
-    if (!pid) return;
-    const found = products.find((p) => String(p.id) === String(pid));
-    if (found) setSelectedProduct(found);
+    const pid = searchParams.get('product')?.trim() ?? '';
+    if (!pid) {
+      setSelectedProduct(null);
+      return;
+    }
+    const found = products.find((p) => productIdsMatch(p.id, pid));
+    if (found) {
+      setSelectedProduct((prev) => (productIdsMatch(prev?.id, found.id) ? prev : found));
+    } else {
+      setSelectedProduct(null);
+    }
   }, [loading, products, searchParams]);
 
   useEffect(() => {
     if (!selectedProduct) return;
+    const cur = searchParams.get('product')?.trim() ?? '';
+    if (productIdsMatch(cur, selectedProduct.id)) return;
     const next = new URLSearchParams(searchParams);
     next.set('product', String(selectedProduct.id));
     setSearchParams(next, { replace: true });

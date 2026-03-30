@@ -43,6 +43,16 @@ export default function ProductDetailPanel({
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose, onPrev, onNext]);
 
+  /** Doim katalog bosh sahifasi `/?product=...` — bosganda shu mahsulot ochiladi. */
+  const shareUrl = useMemo(() => {
+    if (typeof window === 'undefined' || !product?.id) return '';
+    const configured = (import.meta.env.VITE_SHARE_BASE_URL || '').trim().replace(/\/$/, '');
+    const origin = configured || window.location.origin;
+    const u = new URL('/', origin);
+    u.searchParams.set('product', String(product.id));
+    return u.toString();
+  }, [product]);
+
   if (!product) return null;
 
   const title = productTitle(product, language);
@@ -50,26 +60,31 @@ export default function ProductDetailPanel({
   const code = product.size ? String(product.size).trim() : '';
   const closeLabel = t('close');
   const activeImage = images[activeImageIdx] || null;
-  const shareUrl =
-    typeof window !== 'undefined' ? window.location.href : '';
 
-  function buildShareText() {
+  /** Matn: faqat kod + izoh (havola alohida yuboriladi / pastda bir marta). */
+  function buildShareCaption() {
     const lines = [
-      `${t('navCatalog')}: ${title || '-'}`,
-      code ? `${t('categoryOther')}: ${code}` : null,
+      code ? `${t('productCode')}: ${code}` : null,
       clientNote ? `${t('customerNote')}: ${clientNote}` : null,
-      shareUrl ? `URL: ${shareUrl}` : null,
-      activeImage ? `Image: ${activeImage}` : null,
     ].filter(Boolean);
-    return lines.join('\n');
+    if (lines.length > 0) return lines.join('\n');
+    return title ? `${t('navCatalog')}: ${title || '—'}` : '';
+  }
+
+  /** WhatsApp va nusxa: izoh + bitta havola. */
+  function buildShareMessageWithLink() {
+    const cap = buildShareCaption();
+    if (!shareUrl) return cap;
+    if (!cap) return shareUrl;
+    return `${cap}\n\n${shareUrl}`;
   }
 
   function handleShare(channel) {
-    const text = buildShareText();
-    const encoded = encodeURIComponent(text);
+    const caption = buildShareCaption();
+    const encodedCaption = encodeURIComponent(caption);
     if (channel === 'telegram') {
       window.open(
-        `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encoded}`,
+        `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodedCaption}`,
         '_blank',
         'noopener,noreferrer'
       );
@@ -77,7 +92,7 @@ export default function ProductDetailPanel({
     }
     if (channel === 'whatsapp') {
       window.open(
-        `https://wa.me/?text=${encoded}`,
+        `https://wa.me/?text=${encodeURIComponent(buildShareMessageWithLink())}`,
         '_blank',
         'noopener,noreferrer'
       );
@@ -86,7 +101,7 @@ export default function ProductDetailPanel({
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(buildShareText());
+      await navigator.clipboard.writeText(buildShareMessageWithLink());
       setCopied(true);
       setTimeout(() => setCopied(false), 1400);
     } catch {
