@@ -113,26 +113,26 @@ export default function ProductDetailPanel({
     <>
       <button
         type="button"
-        className="fixed inset-0 z-40 animate-fade-in bg-black/30"
+        className="fixed inset-0 z-40 animate-fade-in bg-brand/40 backdrop-blur-sm"
         aria-label={closeLabel}
         onClick={onClose}
       />
-      <div className="fixed inset-y-0 right-0 z-50 flex w-full max-h-screen flex-col bg-white shadow-2xl animate-slide-in-right sm:max-w-lg md:max-w-xl lg:max-w-2xl">
-        <div className="flex flex-shrink-0 items-center justify-between border-b border-stone-100 p-4">
-          <h3 className="truncate pr-2 text-sm font-bold text-stone-900 sm:text-base">
+      <div className="fixed inset-y-0 right-0 z-50 flex w-full max-h-screen flex-col bg-white/90 shadow-2xl backdrop-blur-2xl animate-slide-in-right sm:max-w-lg md:max-w-xl lg:max-w-2xl border-l border-surface-200/50">
+        <div className="flex flex-shrink-0 items-center justify-between border-b border-surface-200/50 p-5 bg-white/50 backdrop-blur-3xl">
+          <h3 className="truncate pr-4 text-base font-extrabold text-brand sm:text-lg">
             {title || '—'}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 transition-colors hover:bg-stone-100"
+            className="rounded-full bg-surface-100/80 p-2.5 transition-all hover:bg-brand hover:text-white"
             aria-label={closeLabel}
           >
-            <X className="h-5 w-5 text-stone-600" />
+            <X className="h-5 w-5" />
           </button>
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-auto">
-          <div className="flex min-h-[40vh] shrink-0 items-center justify-center bg-stone-50 p-4 sm:min-h-[50vh]">
+          <div className="flex min-h-[40vh] shrink-0 items-center justify-center bg-surface-100/50 p-4 sm:min-h-[50vh]">
             {activeImage ? (
               <img
                 src={activeImage}
@@ -151,16 +151,16 @@ export default function ProductDetailPanel({
             )}
           </div>
           {images.length > 1 && (
-            <div className="flex items-center gap-2 border-b border-stone-100 px-4 py-3">
+            <div className="flex items-center gap-3 border-b border-surface-200/50 px-5 py-4">
               <button
                 type="button"
                 onClick={() =>
                   setActiveImageIdx((v) => (v - 1 + images.length) % images.length)
                 }
-                className="shrink-0 rounded-full border border-stone-200 p-1.5 text-stone-600 transition hover:bg-stone-100"
+                className="shrink-0 rounded-full border border-surface-200/80 p-2 text-surface-600 transition hover:bg-surface-100 hover:text-brand"
                 aria-label={t('prevImage')}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
               <div
                 ref={thumbsRowRef}
@@ -172,15 +172,15 @@ export default function ProductDetailPanel({
                     Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
                   thumbsRowRef.current.scrollLeft += delta;
                 }}
-                className="flex min-w-0 flex-1 gap-2 overflow-x-auto overflow-y-hidden"
+                className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto overflow-y-hidden"
               >
                 {images.map((url, idx) => (
                   <button
                     key={`${url}-${idx}`}
                     type="button"
                     onClick={() => setActiveImageIdx(idx)}
-                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border sm:h-20 sm:w-20 ${
-                      idx === activeImageIdx ? 'border-brand ring-1 ring-brand/30' : 'border-stone-200'
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 sm:h-20 sm:w-20 transition-all ${
+                      idx === activeImageIdx ? 'border-brand-accent scale-105 shadow-md' : 'border-transparent hover:border-surface-300'
                     }`}
                     aria-current={idx === activeImageIdx ? 'true' : undefined}
                   >
@@ -191,70 +191,72 @@ export default function ProductDetailPanel({
               <button
                 type="button"
                 onClick={() => setActiveImageIdx((v) => (v + 1) % images.length)}
-                className="shrink-0 rounded-full border border-stone-200 p-1.5 text-stone-600 transition hover:bg-stone-100"
+                className="shrink-0 rounded-full border border-surface-200/80 p-2 text-surface-600 transition hover:bg-surface-100 hover:text-brand"
                 aria-label={t('nextImage')}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           )}
           {code ? (
-            <p className="border-b border-stone-100 px-4 py-3 font-mono text-sm font-semibold text-brand">
-              {code}
-            </p>
+            <div className="border-b border-surface-200/50 px-5 py-4">
+              <span className="inline-block rounded-lg bg-surface-100 px-3 py-1 font-mono text-sm font-bold tracking-wider text-surface-700">
+                {code}
+              </span>
+            </div>
           ) : null}
           {desc ? (
-            <div className="p-4 text-sm leading-relaxed text-stone-700">{desc}</div>
+            <div className="p-5 text-[15px] leading-relaxed text-surface-600">{desc}</div>
           ) : null}
-          <div className="border-t border-stone-100 p-4">
-            <h4 className="mb-3 text-sm font-bold text-stone-900">{t('shareToClient')}</h4>
-            <label className="mt-2 block text-xs text-stone-600">
+          <div className="border-t border-surface-200/50 p-5 p-5">
+            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-surface-500">{t('shareToClient')}</h4>
+            <label className="mt-2 block text-sm font-medium text-brand">
               {t('customerNote')}
               <textarea
                 rows={3}
                 value={clientNote}
                 onChange={(e) => setClientNote(e.target.value)}
                 placeholder={t('adminNotePlaceholder')}
-                className="mt-1 w-full resize-y rounded-md border border-stone-200 px-2 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="mt-2 w-full resize-y rounded-xl border border-surface-200/70 bg-white/50 px-3 py-2 text-sm shadow-sm outline-none transition-all focus:border-brand-accent focus:bg-white focus:ring-4 focus:ring-brand-accent/10"
               />
             </label>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2.5">
               <button
                 type="button"
                 onClick={() => handleShare('telegram')}
-                className="rounded-md bg-sky-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-600"
+                className="rounded-xl bg-[#0088cc] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0088cc]/90 active:scale-95 shadow-sm"
               >
                 {t('shareTelegram')}
               </button>
               <button
                 type="button"
                 onClick={() => handleShare('whatsapp')}
-                className="rounded-md bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600"
+                className="rounded-xl bg-[#25D366] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#25D366]/90 active:scale-95 shadow-sm"
               >
                 {t('shareWhatsapp')}
               </button>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="rounded-md border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-50"
+                className="rounded-xl border border-surface-200/70 bg-white px-4 py-2 text-sm font-semibold text-brand transition hover:border-brand-accent hover:text-brand-accent active:scale-95 shadow-sm"
               >
                 {copied ? t('copied') : t('copyText')}
               </button>
             </div>
           </div>
           {relatedProducts.length > 0 && (
-            <div className="border-t border-stone-100 p-4">
-              <h4 className="mb-3 text-sm font-bold text-stone-900">{t('relatedProducts')}</h4>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div className="border-t border-surface-200/50 p-5">
+              <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-surface-500">{t('relatedProducts')}</h4>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {relatedProducts.map((p) => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => onSelectRelated?.(p)}
-                    className="overflow-hidden rounded-lg border border-stone-200 text-left text-xs text-stone-700 transition hover:border-brand/40 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="overflow-hidden rounded-xl border border-surface-200/50 bg-white/50 text-left text-xs transition-all hover:-translate-y-1 hover:border-surface-300 hover:shadow-card hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
                     aria-label={productTitle(p, language) || String(p.size || 'product')}
                   >
-                    <div className="aspect-square w-full bg-stone-100">
+                    <div className="aspect-square w-full bg-surface-100">
                       {productImageUrl(p) ? (
                         <img
                           src={productImageUrl(p)}
@@ -266,16 +268,16 @@ export default function ProductDetailPanel({
                           }}
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-[11px] text-stone-400">
+                        <div className="flex h-full items-center justify-center text-[11px] text-surface-400">
                           {t('noImage')}
                         </div>
                       )}
                     </div>
-                    <div className="p-2">
-                      <p className="truncate text-[11px] font-semibold text-brand">
+                    <div className="px-3 py-2.5">
+                      <p className="truncate text-xs font-bold text-brand">
                         {String(p.size || '').trim() || '—'}
                       </p>
-                      <p className="mt-0.5 line-clamp-1 text-[11px] text-stone-600">
+                      <p className="mt-1 line-clamp-1 text-xs text-surface-500">
                         {productTitle(p, language) || '—'}
                       </p>
                     </div>

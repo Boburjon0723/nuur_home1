@@ -34,38 +34,36 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
 
   const displayTitle = SITE_NAME.trim() || t('defaultSiteName');
 
-  const navBtn =
-    'rounded-full px-4 py-2 text-sm font-semibold transition whitespace-nowrap';
-  const active = 'bg-brand text-white shadow-sm';
-  const inactive = 'bg-stone-100 text-stone-700 hover:bg-stone-200';
-
   return (
-    <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-surface-200/40 bg-white/60 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-white/60">
       <div className="mx-auto max-w-7xl px-4 py-3 md:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link to="/" className="text-lg font-bold text-brand md:text-xl">
+          <Link
+            to="/"
+            className="text-xl font-extrabold tracking-tight text-brand transition-colors duration-300 hover:text-brand-accent md:text-2xl"
+          >
             {displayTitle}
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <nav className="flex items-center gap-2">
               <Link
                 to="/catalog"
-                className={`${navBtn} ${isCatalog ? active : inactive}`}
+                className={`nav-pill ${isCatalog ? 'nav-pill-active' : 'nav-pill-idle'}`}
               >
                 {t('navCatalog')}
               </Link>
               <Link
                 to="/"
-                className={`${navBtn} ${isAlbum ? active : inactive}`}
+                className={`nav-pill ${isAlbum ? 'nav-pill-active' : 'nav-pill-idle'}`}
               >
                 {t('navAlbum')}
               </Link>
             </nav>
-            <div className="flex items-center rounded-full border border-stone-200 bg-white px-1 py-0.5 text-xs font-semibold text-stone-600">
+            <div className="flex items-center rounded-full border border-stone-200/90 bg-white px-1 py-0.5 text-xs font-semibold text-stone-600 shadow-sm">
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="max-w-[7.5rem] cursor-pointer rounded-full bg-transparent py-1.5 pl-2 pr-2 outline-none hover:text-brand sm:max-w-none sm:pr-3"
+                className="max-w-[7.5rem] cursor-pointer rounded-full bg-transparent py-1.5 pl-2 pr-2 outline-none transition hover:text-brand focus-visible:ring-2 focus-visible:ring-brand/30 sm:max-w-none sm:pr-3"
                 aria-label="Language"
               >
                 {LANGS.map(({ code, labelKey }) => (
@@ -86,10 +84,8 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
               navigate({ pathname: '/catalog', search: '', hash: '' }, { replace: false });
               scrollToCategorySection(null);
             }}
-            className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
-              activeCategoryId == null && isCatalog
-                ? 'border-brand/40 bg-brand/10 text-brand'
-                : 'border-stone-200 bg-white text-stone-600 hover:border-brand/40 hover:text-brand'
+            className={`chip ${
+              activeCategoryId == null && isCatalog ? 'chip-active' : 'chip-idle'
             }`}
             aria-current={activeCategoryId == null && isCatalog ? 'true' : undefined}
           >
@@ -106,10 +102,8 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
               trackEvent('category_click', { categoryId: 'new', source: 'header' });
               scrollToCategorySection('new');
             }}
-            className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
-              activeCategoryId === '__new__'
-                ? 'border-brand/40 bg-brand/10 text-brand'
-                : 'border-stone-200 bg-white text-brand hover:border-brand/40'
+            className={`chip font-semibold ${
+              activeCategoryId === '__new__' ? 'chip-active' : 'chip-idle'
             }`}
             aria-current={activeCategoryId === '__new__' ? 'true' : undefined}
           >
@@ -131,10 +125,8 @@ export default function HeaderNav({ categories = [], activeCategoryId = null }) 
                 });
                 scrollToCategorySection(cat.id);
               }}
-              className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
-                activeCategoryId === cat.id
-                  ? 'border-brand/40 bg-brand/10 text-brand'
-                  : 'border-stone-200 bg-white text-stone-600 hover:border-brand/40 hover:text-brand'
+              className={`chip ${
+                activeCategoryId === cat.id ? 'chip-active' : 'chip-idle'
               }`}
               aria-current={activeCategoryId === cat.id ? 'true' : undefined}
             >

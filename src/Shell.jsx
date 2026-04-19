@@ -37,9 +37,10 @@ export default function Shell() {
       <Outlet
         context={{ categories, activeCategoryId, setActiveCategoryId }}
       />
-      <footer className="mt-auto border-t border-stone-200 py-8 text-center text-sm text-stone-500">
-        <p>
-          {displayTitle} {t('footerNote')}
+      <footer className="mt-auto border-t border-stone-200/80 bg-white/60 py-8 text-center text-sm text-stone-500 backdrop-blur-sm">
+        <p className="mx-auto max-w-2xl leading-relaxed">
+          <span className="font-semibold text-stone-700">{displayTitle}</span>{' '}
+          <span className="text-stone-500">{t('footerNote')}</span>
         </p>
       </footer>
     </div>

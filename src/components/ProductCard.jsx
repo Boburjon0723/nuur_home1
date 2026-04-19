@@ -3,7 +3,7 @@ import {
   productDescription,
   productImageUrl,
 } from '../api/catalog';
-import { Heart } from 'lucide-react';
+import { ArrowRight, Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function ProductCard({
@@ -32,58 +32,69 @@ export default function ProductCard({
         }
       }}
       aria-label={title || t('noImage')}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-stone-200/80 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md active:scale-[0.98] sm:rounded-2xl"
+      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[1.25rem] border border-surface-200/50 bg-white/80 shadow-card backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-card-hover hover:border-surface-300 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/40"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-100">
         {img ? (
           <img
             src={img}
-            alt={title || t('noImage')}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+            alt=""
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-stone-400">
+          <div className="flex h-full items-center justify-center text-sm font-medium text-surface-400">
             —
           </div>
         )}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand/60 via-brand/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          aria-hidden
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-3 items-center justify-center gap-2 pb-4 text-xs font-semibold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <span>{t('viewImage')}</span>
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </div>
         <button
           type="button"
           aria-label={t('favorites')}
+          aria-pressed={isFavorite}
           onClick={(e) => {
             e.stopPropagation();
             onToggleFavorite?.(product.id);
           }}
-          className={`absolute right-2 top-2 rounded-full p-1.5 backdrop-blur-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full shadow-md backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/90 ${
             isFavorite
-              ? 'bg-brand text-white'
-              : 'bg-white/90 text-stone-600 hover:text-brand'
+              ? 'bg-brand-accent text-white scale-100'
+              : 'bg-white/80 text-surface-500 hover:scale-110 hover:bg-white hover:text-brand-accent active:scale-95'
           }`}
         >
           <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
       </div>
-      <div className="flex flex-1 flex-col p-2 sm:p-4">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         {code ? (
-          <p className="mb-1 inline-flex w-fit rounded-md bg-brand/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-brand sm:text-xs">
+          <p className="mb-2 w-fit rounded-lg bg-surface-100 px-2.5 py-1 font-mono text-[11px] font-bold tracking-wider text-surface-600 sm:text-xs">
             {code}
           </p>
         ) : null}
-        <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-stone-900 sm:text-sm">
-          {title}
+        <h3 className="line-clamp-2 text-[15px] font-bold leading-snug tracking-tight text-brand">
+          {title || '—'}
         </h3>
         {desc ? (
-          <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-stone-600 sm:mt-2 sm:line-clamp-3 sm:text-sm">
+          <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-surface-500 sm:line-clamp-3">
             {desc}
           </p>
         ) : null}
         {(missingImage || missingTranslation) && (
-          <div className="mt-2 flex gap-1 text-[10px] font-semibold text-amber-700 sm:text-[11px]">
+          <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-semibold sm:text-[11px]">
             {missingImage && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.5">{t('noImage')}</span>
+              <span className="rounded-md bg-amber-50 px-2 py-1 text-amber-600 border border-amber-200/50">
+                {t('noImage')}
+              </span>
             )}
             {missingTranslation && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.5">
+              <span className="rounded-md bg-amber-50 px-2 py-1 text-amber-600 border border-amber-200/50">
                 {t('missingTranslation')}
               </span>
             )}

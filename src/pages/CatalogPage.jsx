@@ -317,39 +317,39 @@ export default function CatalogPage() {
     >
       <main className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-3 py-8 sm:px-4 sm:py-10 md:px-8 lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside
-          className={`hidden self-start rounded-2xl border border-stone-200 bg-white p-4 lg:sticky lg:top-24 lg:block ${
+          className={`hidden self-start rounded-[1.25rem] border border-surface-200/50 bg-white/70 p-5 shadow-card backdrop-blur-md lg:sticky lg:top-24 lg:block ${
             desktopFiltersOpen ? '' : 'h-fit'
           }`}
         >
           <button
             type="button"
-            className="mb-4 inline-flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-50"
+            className="mb-5 inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-surface-200/80 bg-surface-50/50 px-4 py-2.5 text-sm font-semibold text-brand transition-all hover:bg-surface-100/80 active:scale-95"
             onClick={() => setDesktopFiltersOpen((v) => !v)}
             aria-expanded={desktopFiltersOpen}
           >
-            <SlidersHorizontal className="h-4 w-4" />
+            <SlidersHorizontal className="h-4 w-4 text-brand-accent" />
             {t('filterTitle')}
           </button>
           {desktopFiltersOpen && (
-            <div className="space-y-3 lg:max-h-[calc(100vh-8.5rem)] lg:overflow-auto lg:pr-1">
+            <div className="space-y-4 lg:max-h-[calc(100vh-8.5rem)] lg:overflow-auto lg:pr-1">
               <label className="relative block">
-                <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-stone-400" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-surface-400" />
                 <input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-stone-200 py-2 pl-8 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  className="filter-input !py-3 !pl-10"
                   placeholder={t('searchPlaceholder')}
                   aria-label={t('searchPlaceholder')}
                 />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs font-semibold text-stone-600">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-surface-500">
                   {t('sortLabel')}
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full rounded-lg border border-stone-200 px-2 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  className="filter-input cursor-pointer"
                 >
                   <option value="newest">{t('sortNewest')}</option>
                   <option value="oldest">{t('sortOldest')}</option>
@@ -357,20 +357,23 @@ export default function CatalogPage() {
                   <option value="za">{t('sortZa')}</option>
                 </select>
               </label>
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-stone-700">
+              <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-surface-200/50 bg-surface-50/30 px-3.5 py-3 text-sm font-medium text-brand transition-all hover:bg-surface-100/50">
                 <input
                   type="checkbox"
                   checked={favoritesOnly}
                   onChange={(e) => setFavoritesOnly(e.target.checked)}
+                  className="h-4 w-4 rounded border-surface-300 text-brand-accent focus:ring-brand-accent/30"
                 />
                 {t('favoritesOnly')}
               </label>
-              <div className="border-t border-stone-100 pt-3">
+              <div className="border-t border-surface-200/50 pt-4">
                 <button
                   type="button"
                   onClick={() => handleSelectCategory(null)}
-                  className={`mb-2 w-full rounded-md px-2 py-1.5 text-left text-sm ${
-                    activeCategoryId == null ? 'bg-brand/10 text-brand' : 'hover:bg-stone-100'
+                  className={`mb-2.5 w-full rounded-xl border-2 border-solid px-4 py-3 text-left text-sm transition-all duration-300 active:scale-95 ${
+                    activeCategoryId == null
+                      ? 'border-brand bg-brand font-bold text-white shadow-nav'
+                      : 'border-surface-200/50 bg-white/70 font-medium text-surface-600 hover:border-brand-accent/50 hover:bg-white hover:text-brand-accent hover:shadow-sm'
                   }`}
                 >
                   {t('filterAll')}
@@ -378,26 +381,33 @@ export default function CatalogPage() {
                 <button
                   type="button"
                   onClick={() => handleSelectCategory('__new__')}
-                  className={`mb-2 w-full rounded-md px-2 py-1.5 text-left text-sm font-semibold ${
+                  className={`mb-2.5 w-full rounded-xl border-2 border-solid px-4 py-3 text-left text-sm transition-all duration-300 active:scale-95 ${
                     activeCategoryId === '__new__'
-                      ? 'bg-brand/10 text-brand'
-                      : 'hover:bg-stone-100'
+                      ? 'border-brand bg-brand font-bold text-white shadow-nav'
+                      : 'border-surface-200/50 bg-white/70 font-semibold text-brand hover:border-brand-accent/50 hover:bg-white hover:text-brand-accent hover:shadow-sm'
                   }`}
                 >
                   {t('categoryNew')}
                 </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => handleSelectCategory(cat.id)}
-                    className={`mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm ${
-                      activeCategoryId === cat.id ? 'bg-brand/10 text-brand' : 'hover:bg-stone-100'
-                    }`}
-                  >
-                    {categoryLabel(cat, language) || cat.name || '—'}
-                  </button>
-                ))}
+                {categories.map((cat) => {
+                  const selected =
+                    activeCategoryId != null &&
+                    String(activeCategoryId) === String(cat.id);
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => handleSelectCategory(cat.id)}
+                      className={`mb-2.5 w-full rounded-xl border-2 border-solid px-4 py-3 text-left text-sm transition-all duration-300 active:scale-95 ${
+                        selected
+                          ? 'border-brand bg-brand font-bold text-white shadow-nav'
+                          : 'border-surface-200/50 bg-white/70 font-medium text-surface-600 hover:border-brand-accent/50 hover:bg-white hover:text-brand-accent hover:shadow-sm'
+                      }`}
+                    >
+                      {categoryLabel(cat, language) || cat.name || '—'}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -408,18 +418,18 @@ export default function CatalogPage() {
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700"
+              className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 shadow-sm transition hover:border-brand/25 hover:shadow active:scale-[0.98]"
             >
-              <Funnel className="h-4 w-4" />
+              <Funnel className="h-4 w-4 text-brand" />
               {t('openFilters')}
             </button>
             <button
               type="button"
               onClick={() => setFavoritesOnly((v) => !v)}
-              className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium ${
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
                 favoritesOnly
-                  ? 'border-brand/40 bg-brand/10 text-brand'
-                  : 'border-stone-200 bg-white text-stone-700'
+                  ? 'border-brand/35 bg-brand/12 text-brand ring-1 ring-brand/15'
+                  : 'border-stone-200 bg-white text-stone-800 hover:border-stone-300'
               }`}
             >
               <Star className={`h-4 w-4 ${favoritesOnly ? 'fill-current' : ''}`} />
@@ -429,27 +439,33 @@ export default function CatalogPage() {
           {loading && (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[4/3] rounded-xl bg-stone-200" />
-                  <div className="mt-2 h-3 w-3/4 rounded bg-stone-200" />
-                  <div className="mt-2 h-3 w-1/2 rounded bg-stone-100" />
+                <div key={i} className="animate-pulse overflow-hidden rounded-2xl border border-stone-100 bg-white shadow-sm">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-stone-200 to-stone-100" />
+                  <div className="space-y-2 p-3">
+                    <div className="h-3 w-3/4 rounded bg-stone-200" />
+                    <div className="h-3 w-1/2 rounded bg-stone-100" />
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
           {!loading && fetchErr && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+            <div className="rounded-2xl border border-red-200/80 bg-red-50/90 px-5 py-4 text-center text-sm font-medium text-red-900 shadow-sm">
               {errMessage}
             </div>
           )}
 
           {!loading && !fetchErr && products.length === 0 && (
-            <p className="text-center text-stone-600">{t('emptyProducts')}</p>
+            <div className="rounded-2xl border border-dashed border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+              <p className="text-stone-600">{t('emptyProducts')}</p>
+            </div>
           )}
 
           {!loading && !fetchErr && products.length > 0 && visibleProducts.length === 0 && (
-            <p className="text-center text-stone-600">{t('noResults')}</p>
+            <div className="rounded-2xl border border-dashed border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+              <p className="font-medium text-stone-700">{t('noResults')}</p>
+            </div>
           )}
 
           {!loading && !fetchErr && products.length > 0 && visibleProducts.length > 0 && (
@@ -515,27 +531,27 @@ export default function CatalogPage() {
         <>
           <button
             type="button"
-            className="fixed inset-0 z-40 bg-black/30"
+            className="fixed inset-0 z-40 animate-fade-in bg-stone-900/40 backdrop-blur-[2px]"
             onClick={() => setMobileFiltersOpen(false)}
             aria-label={t('closeFilters')}
           />
-          <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white p-4 shadow-2xl animate-fade-in">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-semibold text-stone-900">{t('filterTitle')}</h3>
+          <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border border-stone-100 bg-white p-5 pb-8 shadow-2xl animate-fade-in">
+            <div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 className="text-base font-bold text-stone-900">{t('filterTitle')}</h3>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="rounded-full p-1.5 hover:bg-stone-100"
+                className="rounded-full p-2 text-stone-500 transition hover:bg-stone-100 hover:text-stone-800"
                 aria-label={t('closeFilters')}
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </div>
-            <label className="mb-2 block">
+            <label className="mb-3 block">
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="filter-input"
                 placeholder={t('searchPlaceholder')}
                 aria-label={t('searchPlaceholder')}
               />
@@ -543,46 +559,64 @@ export default function CatalogPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="mb-3 w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              className="filter-input mb-3 cursor-pointer"
             >
               <option value="newest">{t('sortNewest')}</option>
               <option value="oldest">{t('sortOldest')}</option>
               <option value="az">{t('sortAz')}</option>
               <option value="za">{t('sortZa')}</option>
             </select>
-            <label className="mb-3 flex items-center gap-2 text-sm text-stone-700">
+            <label className="mb-4 flex items-center gap-2.5 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-medium text-stone-800">
               <input
                 type="checkbox"
                 checked={favoritesOnly}
                 onChange={(e) => setFavoritesOnly(e.target.checked)}
+                className="h-4 w-4 rounded border-stone-300 text-brand focus:ring-brand/30"
               />
               {t('favoritesOnly')}
             </label>
-            <div className="max-h-40 overflow-auto border-t border-stone-100 pt-2">
+            <div className="max-h-44 overflow-auto border-t border-stone-100 pt-3">
               <button
                 type="button"
                 onClick={() => handleSelectCategory(null)}
-                className="mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-stone-100"
+                className={`mb-2 w-full rounded-xl border-2 border-solid px-3 py-2.5 text-left text-sm transition active:scale-[0.99] ${
+                  activeCategoryId == null
+                    ? 'border-brand bg-brand-soft font-bold text-brand shadow-sm'
+                    : 'border-stone-200 bg-white font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50'
+                }`}
               >
                 {t('filterAll')}
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectCategory('__new__')}
-                className="mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm font-semibold hover:bg-stone-100"
+                className={`mb-2 w-full rounded-xl border-2 border-solid px-3 py-2.5 text-left text-sm transition active:scale-[0.99] ${
+                  activeCategoryId === '__new__'
+                    ? 'border-brand bg-brand-soft font-bold text-brand shadow-sm'
+                    : 'border-stone-200 bg-white font-semibold text-stone-800 hover:border-stone-300 hover:bg-stone-50'
+                }`}
               >
                 {t('categoryNew')}
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => handleSelectCategory(cat.id)}
-                  className="mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-stone-100"
-                >
-                  {categoryLabel(cat, language) || cat.name || '—'}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const selected =
+                  activeCategoryId != null &&
+                  String(activeCategoryId) === String(cat.id);
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => handleSelectCategory(cat.id)}
+                    className={`mb-2 w-full rounded-xl border-2 border-solid px-3 py-2.5 text-left text-sm transition active:scale-[0.99] ${
+                      selected
+                        ? 'border-brand bg-brand-soft font-bold text-brand shadow-sm'
+                        : 'border-stone-200 bg-white font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50'
+                    }`}
+                  >
+                    {categoryLabel(cat, language) || cat.name || '—'}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </>
