@@ -8,6 +8,7 @@ const SITE_NAME = import.meta.env.VITE_SITE_NAME || '';
 
 export default function Shell() {
   const [categories, setCategories] = useState([]);
+  const [activeCategoryId, setActiveCategoryId] = useState(null);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -29,8 +30,13 @@ export default function Shell() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <HeaderNav categories={categories} />
-      <Outlet context={{ categories }} />
+      <HeaderNav
+        categories={categories}
+        activeCategoryId={activeCategoryId}
+      />
+      <Outlet
+        context={{ categories, activeCategoryId, setActiveCategoryId }}
+      />
       <footer className="mt-auto border-t border-stone-200 py-8 text-center text-sm text-stone-500">
         <p>
           {displayTitle} {t('footerNote')}

@@ -1,6 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { categoryLabel } from '../api/catalog';
 import { useLanguage } from '../contexts/LanguageContext';
+import { trackEvent } from '../lib/analytics';
 
 const SITE_NAME = import.meta.env.VITE_SITE_NAME || '';
 
@@ -10,7 +11,22 @@ const LANGS = [
   { code: 'en', labelKey: 'langEn' },
 ];
 
-export default function HeaderNav({ categories = [] }) {
+function scrollToCategorySection(catId) {
+  if (catId == null) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  const id = catId === 'new' || catId === '__new__' ? 'cat-new' : `cat-${catId}`;
+  const run = () =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  run();
+  requestAnimationFrame(run);
+  setTimeout(run, 80);
+  setTimeout(run, 320);
+}
+
+export default function HeaderNav({ categories = [], activeCategoryId = null }) {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const isAlbum = pathname === '/' || pathname === '';
@@ -63,27 +79,68 @@ export default function HeaderNav({ categories = [] }) {
         </div>
 
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Link
+            to="/catalog"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate({ pathname: '/catalog', search: '', hash: '' }, { replace: false });
+              scrollToCategorySection(null);
+            }}
+            className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+              activeCategoryId == null && isCatalog
+                ? 'border-brand/40 bg-brand/10 text-brand'
+                : 'border-stone-200 bg-white text-stone-600 hover:border-brand/40 hover:text-brand'
+            }`}
+            aria-current={activeCategoryId == null && isCatalog ? 'true' : undefined}
+          >
+            {t('filterAll')}
+          </Link>
+          <Link
+            to="/catalog#cat-new"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(
+                { pathname: '/catalog', search: '', hash: 'cat-new' },
+                { replace: false }
+              );
+              trackEvent('category_click', { categoryId: 'new', source: 'header' });
+              scrollToCategorySection('new');
+            }}
+            className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+              activeCategoryId === '__new__'
+                ? 'border-brand/40 bg-brand/10 text-brand'
+                : 'border-stone-200 bg-white text-brand hover:border-brand/40'
+            }`}
+            aria-current={activeCategoryId === '__new__' ? 'true' : undefined}
+          >
+            {t('categoryNew')}
+          </Link>
+          {categories.map((cat) => (
             <Link
-              to="/catalog"
-              className="shrink-0 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-600 hover:border-brand/40 hover:text-brand"
+              key={cat.id}
+              to={`/catalog#cat-${cat.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(
+                  { pathname: '/catalog', search: '', hash: `cat-${cat.id}` },
+                  { replace: false }
+                );
+                trackEvent('category_click', {
+                  categoryId: cat.id,
+                  source: 'header',
+                });
+                scrollToCategorySection(cat.id);
+              }}
+              className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                activeCategoryId === cat.id
+                  ? 'border-brand/40 bg-brand/10 text-brand'
+                  : 'border-stone-200 bg-white text-stone-600 hover:border-brand/40 hover:text-brand'
+              }`}
+              aria-current={activeCategoryId === cat.id ? 'true' : undefined}
             >
-              {t('filterAll')}
+              {categoryLabel(cat, language) || cat.name}
             </Link>
-            <Link
-              to="/catalog#cat-new"
-              className="shrink-0 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand hover:border-brand/40"
-            >
-              {t('categoryNew')}
-            </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/catalog#cat-${cat.id}`}
-                className="shrink-0 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-600 hover:border-brand/40 hover:text-brand"
-              >
-                {categoryLabel(cat, language) || cat.name}
-              </Link>
-            ))}
+          ))}
         </div>
       </div>
     </header>
