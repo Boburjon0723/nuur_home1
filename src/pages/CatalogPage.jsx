@@ -5,6 +5,7 @@ import {
   productDescription,
   productTitle,
   categoryLabel,
+  isArqonCategory,
 } from '../api/catalog';
 import {
   useLocation,
@@ -207,13 +208,25 @@ export default function CatalogPage() {
       }
     }
 
-    const ordered = categories
+    const orderedFull = categories
       .map((c) => byCatId.get(c.id))
       .filter((s) => s && s.products.length > 0);
 
+    const arqonSections = orderedFull.filter(
+      (s) => s && isArqonCategory(s.category)
+    );
+    const ordered = orderedFull.filter(
+      (s) => s && !isArqonCategory(s.category)
+    );
+
     const newProducts = visibleProducts.filter((p) => p.show_in_new === true);
 
-    return { ordered, uncategorized, newProducts };
+    return {
+      ordered,
+      arqonSections,
+      uncategorized,
+      newProducts,
+    };
   }, [categories, visibleProducts]);
 
   useEffect(() => {
@@ -502,6 +515,17 @@ export default function CatalogPage() {
                   onToggleFavorite={handleToggleFavorite}
                 />
               )}
+
+              {sections.arqonSections.map(({ category, products: list }) => (
+                <CategorySection
+                  key={category.id}
+                  category={category}
+                  products={list}
+                  onSelectProduct={handleSelectProduct}
+                  favorites={favorites}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
             </div>
           )}
         </section>

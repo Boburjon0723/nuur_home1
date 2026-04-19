@@ -40,6 +40,32 @@ export function productDescription(p, lang) {
   return text ? String(text).trim() : '';
 }
 
+/**
+ * «Arqon» kategoriyasini nom maydonlari bo‘yicha aniqlash (chap panel / header tartibi va sahifa oxirida chiqarish uchun).
+ */
+export function isArqonCategory(cat) {
+  if (!cat) return false;
+  const blob = [cat.name, cat.name_uz, cat.name_ru, cat.name_en]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  return (
+    blob.includes('arqon') ||
+    blob.includes('аркан') ||
+    blob.includes('веревк') ||
+    blob.includes('верёвк') ||
+    blob.includes('rope')
+  );
+}
+
+/** Ro‘yxatda Arqon doim oxirida (header chip va filtr tartibi). */
+export function sortCategoriesArqonLast(categories) {
+  if (!Array.isArray(categories) || categories.length === 0) return categories;
+  const arq = categories.filter(isArqonCategory);
+  const rest = categories.filter((c) => !isArqonCategory(c));
+  return [...rest, ...arq];
+}
+
 export async function fetchCategories() {
   ensureClient();
   const { data, error } = await supabase
@@ -48,7 +74,7 @@ export async function fetchCategories() {
     .order('name', { ascending: true });
 
   if (error) throw error;
-  return data || [];
+  return sortCategoriesArqonLast(data || []);
 }
 
 export async function fetchActiveProducts() {
